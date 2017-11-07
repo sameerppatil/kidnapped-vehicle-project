@@ -85,7 +85,7 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
 
   for (int i = 0; i < num_particles; i++)
   {
-    if (fabs(yaw_rate) < 0.00001)
+    if (fabs(yaw_rate) < 0.0001)
     {
       particles[i].x = particles[i].x + velocity*delta_t*cos(particles[i].theta);
       particles[i].y = particles[i].y + velocity*delta_t*cos(particles[i].theta);
@@ -127,7 +127,10 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 	//   and the following is a good resource for the actual equation to implement (look at equation
 	//   3.33
 	//   http://planning.cs.uiuc.edu/node99.html
-  double dist1, dist2;
+  double dist1, dist2, min_distance;
+  double sig_x = std_landmark[0];
+  double sig_y = std_landmark[1];
+  double mu_x, mu_y;
 
   for (int i = 0; i < num_particles; i++)
   {
@@ -149,10 +152,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
           map_landmarks.landmark_list[m].x_f, map_landmarks.landmark_list[m].y_f});
       }
     }
-
-    double sig_x = std_landmark[0];
-    double sig_y = std_landmark[1];
-    double mu_x, mu_y;
+    mu_x = 0;
+    mu_y = 0;
 
     for (LandmarkObs &obs : observations)
     {
@@ -160,7 +161,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
       double x_map = cos(p_theta) * obs.x - sin(p_theta) * obs.y + p_x;
       double y_map = sin(p_theta) * obs.x + cos(p_theta) * obs.y + p_y;
 
-      double min_distance = dist(x_map, y_map, nearby_landmarks[0].x, nearby_landmarks[0].y);
+      min_distance = dist(x_map, y_map, nearby_landmarks[0].x, nearby_landmarks[0].y);
 
       for(LandmarkObs &local_landmarks : nearby_landmarks)
       {
