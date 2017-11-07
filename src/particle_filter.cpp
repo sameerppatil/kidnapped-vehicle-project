@@ -192,11 +192,10 @@ void ParticleFilter::resample() {
 
   vector<Particle> resampled_particle_list(num_particles);
 
-  discrete_distribution<int> disc_dist(weights.begin(), weights.end());
-
+  discrete_distribution<int> distribution(weights.begin(), weights.end());
   for (Particle &sample : resampled_particle_list)
   {
-    sample = particles[disc_dist(gen)];
+    sample = particles[distribution(gen)];
   }
 
   particles = resampled_particle_list;
